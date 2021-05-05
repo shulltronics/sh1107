@@ -1,4 +1,4 @@
-//! Draw a 1 bit per pixel black and white image. On a 128x64 sh1106 display over I2C.
+//! Draw a 1 bit per pixel black and white image. On a 128x64 sh1107 display over I2C.
 //!
 //! Image was created with ImageMagick:
 //!
@@ -23,6 +23,8 @@
 #![no_std]
 #![no_main]
 
+use stm32f1xx_hal as hal;
+
 use cortex_m_rt::{entry, exception, ExceptionFrame};
 use embedded_graphics::{
     image::{Image, ImageRawLE},
@@ -30,8 +32,8 @@ use embedded_graphics::{
     prelude::*,
 };
 use panic_semihosting as _;
-use sh1106::{prelude::*, Builder};
-use stm32f1xx_hal::{
+use sh1107::{prelude::*, Builder};
+use hal::{
     i2c::{BlockingI2c, DutyCycle, Mode},
     prelude::*,
     stm32,

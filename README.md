@@ -1,14 +1,13 @@
-# SH1106 driver
+# SH1107 driver
 
-[![Build Status](https://circleci.com/gh/jamwaffles/sh1106/tree/master.svg?style=shield)](https://circleci.com/gh/jamwaffles/sh1106/tree/master)
-[![Crates.io](https://img.shields.io/crates/v/sh1106.svg)](https://crates.io/crates/sh1106)
-[![Docs.rs](https://docs.rs/sh1106/badge.svg)](https://docs.rs/sh1106)
+[![Crates.io](https://img.shields.io/crates/v/sh1107.svg)](https://crates.io/crates/sh1107)
+[![Docs.rs](https://docs.rs/sh1107/badge.svg)](https://docs.rs/sh1107)
 
-[![SH1106 display module showing the Rust logo](readme_banner.jpg?raw=true)](examples/image.rs)
+[![SH1107 display module showing the Rust logo](readme_banner.jpg?raw=true)](examples/image.rs)
 
-I2C driver for the SH1106 OLED display written in 100% Rust
+I2C driver for the SH1107 OLED display written in 100% Rust
 
-## [Documentation](https://docs.rs/sh1106)
+## [Documentation](https://docs.rs/sh1107)
 
 From [`examples/text.rs`](examples/text.rs):
 
@@ -24,7 +23,7 @@ use embedded_graphics::{
     style::TextStyle,
 };
 use panic_semihosting as _;
-use sh1106::{prelude::*, Builder};
+use sh1107::{prelude::*, Builder};
 use stm32f1xx_hal::{
     i2c::{BlockingI2c, DutyCycle, Mode},
     prelude::*,

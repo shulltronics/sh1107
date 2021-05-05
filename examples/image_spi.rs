@@ -1,4 +1,4 @@
-//! Draw a 1 bit per pixel black and white image. On a 128x64 sh1106 display over SPI.
+//! Draw a 1 bit per pixel black and white image. On a 128x64 sh1107 display over SPI.
 //!
 //! Image was created with ImageMagick:
 //!
@@ -33,7 +33,7 @@ use embedded_graphics::{
 };
 use embedded_hal::spi;
 use panic_semihosting as _;
-use sh1106::{prelude::*, Builder};
+use sh1107::{prelude::*, Builder};
 use stm32f1xx_hal::{prelude::*, spi::Spi, stm32};
 
 #[entry]
@@ -69,7 +69,7 @@ fn main() -> ! {
 
     // If you aren't using the Chip Select pin, use this instead:
     // let mut disp: GraphicsMode<_> = Builder::new()
-    //     .connect_spi(spi, dc, sh1106::builder::NoOutputPin::new())
+    //     .connect_spi(spi, dc, sh1107::builder::NoOutputPin::new())
     //     .into();
 
     disp.init().unwrap();

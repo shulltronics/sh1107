@@ -1,4 +1,4 @@
-//! sh1106 SPI interface
+//! sh1107 SPI interface
 
 use hal::{self, digital::v2::OutputPin};
 
@@ -20,7 +20,7 @@ where
     DC: OutputPin<Error = PinE>,
     CS: OutputPin<Error = PinE>,
 {
-    /// Create new SPI interface for communciation with sh1106
+    /// Create new SPI interface for communciation with sh1107
     pub fn new(spi: SPI, dc: DC, cs: CS) -> Self {
         Self { spi, dc, cs }
     }
