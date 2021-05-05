@@ -42,8 +42,8 @@ where
     }
 
     fn send_data(&mut self, buf: &[u8]) -> Result<(), Self::Error> {
-        // Display is always 128px wide
-        const CHUNKLEN: usize = 128;
+        // TODO: figure out a way to pass chunklen in, should likely always be 64 for sh1107, but the sh1106 was doing 128
+        const CHUNKLEN: usize = 64;
 
         const BUFLEN: usize = CHUNKLEN + 1;
 
