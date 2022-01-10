@@ -60,7 +60,8 @@ where
             | DisplaySize::Display132x64 => Command::DisplayOffset(0).send(&mut self.iface),
         }?;
 
-        Command::StartLine(0).send(&mut self.iface)?;
+        // Shulltronics mod: setting this to 2 fixed my problem.. why?
+        Command::StartLine(2).send(&mut self.iface)?;
         // TODO: Ability to turn charge pump on/off
         // Display must be off when performing this command
         Command::ChargePump(true).send(&mut self.iface)?;
