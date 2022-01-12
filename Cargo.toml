@@ -17,6 +17,7 @@ targets = [ "thumbv7m-none-eabi", "thumbv7em-none-eabihf" ]
 
 [dependencies]
 embedded-hal = "0.2.3"
+enum-iterator = "0.7.0"
 
 [dependencies.embedded-graphics]
 optional = true
