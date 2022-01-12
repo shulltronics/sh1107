@@ -169,40 +169,41 @@ where
 
 #[cfg(feature = "graphics")]
 use embedded_graphics::{
-    drawable,
-    geometry::Size,
-    pixelcolor::{
-        raw::{RawData, RawU1},
-        BinaryColor,
-    },
-    DrawTarget,
+    geometry::{OriginDimensions, Size},
+    pixelcolor::BinaryColor,
+    draw_target::DrawTarget,
+    Pixel,
 };
 
 #[cfg(feature = "graphics")]
-impl<DI> DrawTarget<BinaryColor> for GraphicsMode<DI>
+impl<DI> DrawTarget for GraphicsMode<DI>
 where
     DI: DisplayInterface,
 {
+    type Color = BinaryColor;
     type Error = DI::Error;
 
-    fn draw_pixel(&mut self, pixel: drawable::Pixel<BinaryColor>) -> Result<(), Self::Error> {
-        let drawable::Pixel(pos, color) = pixel;
-
-        // Guard against negative values. All positive i32 values from `pos` can be represented in
-        // the `u32`s that `set_pixel()` accepts...
-        if pos.x < 0 || pos.y < 0 {
-            return Ok(());
+    fn draw_iter<I>(&mut self, pixels: I) -> Result<(), Self::Error>
+    where
+        I: IntoIterator<Item = Pixel<Self::Color>>,
+    {
+        for Pixel(coord, color) in pixels.into_iter() {
+            let (x, y) = (coord.x, coord.y);
+            if x < 0 || y < 0 {
+                return Ok(());
+            }
+            self.set_pixel(x as u32, y as u32, color.is_on() as u8);
         }
-
-        // ... which makes the `as` coercions here safe.
-        self.set_pixel(pos.x as u32, pos.y as u32, RawU1::from(color).into_inner());
-
         Ok(())
     }
+}
 
+impl<DI> OriginDimensions for GraphicsMode<DI>
+where
+    DI: DisplayInterface,
+{
     fn size(&self) -> Size {
         let (w, h) = self.get_dimensions();
-
         Size::new(w as u32, h as u32)
     }
 }

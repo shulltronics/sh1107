@@ -21,7 +21,7 @@ enum-iterator = "0.7.0"
 
 [dependencies.embedded-graphics]
 optional = true
-version = "0.6.0"
+version = "0.7.1"
 
 [dev-dependencies]
 cortex-m = { version = "0.7" }
