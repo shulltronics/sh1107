@@ -19,6 +19,8 @@ pub enum Command {
     ColumnAddressLow(u8),
     /// Set column address higher 4 bits
     ColumnAddressHigh(u8),
+    /// Set Memory Addressing Mode
+    MemAddressMode(u8),
     /// Set page address
     PageAddress(Page),
     /// Set display start line from 0-63
@@ -63,6 +65,7 @@ impl Command {
             Command::DisplayOn(on) => ([0xAE | (on as u8), 0, 0, 0, 0, 0, 0], 1),
             Command::ColumnAddressLow(addr) => ([0xF & addr, 0, 0, 0, 0, 0, 0], 1),
             Command::ColumnAddressHigh(addr) => ([0x10 | (0xF & addr), 0, 0, 0, 0, 0, 0], 1),
+            Command::MemAddressMode(mode) => ([0x20 | mode, 0, 0, 0, 0, 0, 0], 1),
             Command::PageAddress(page) => ([0xB0 | (page as u8), 0, 0, 0, 0, 0, 0], 1),
                 // Shulltronics mod: change from 0x40 register addr to 0xDC; change len to 2
             //Command::StartLine(line) => ([0xDC, 0x40 | (0x3F & line), 0, 0, 0, 0, 0], 2),
@@ -75,11 +78,13 @@ impl Command {
             Command::DisplayClockDiv(fosc, div) => {
                 ([0xD5, ((0xF & fosc) << 4) | (0xF & div), 0, 0, 0, 0, 0], 2)
             }
-            Command::PreChargePeriod(phase1, phase2) => (
-                [0xD9, ((0xF & phase2) << 4) | (0xF & phase1), 0, 0, 0, 0, 0],
+            Command::PreChargePeriod(discharge, precharge) => (
+                // Shulltronics mod: make this more readable
+                [0xD9, ((0xF & discharge) << 4) | (0xF & precharge), 0, 0, 0, 0, 0],
                 2,
             ),
-            Command::VcomhDeselect(level) => ([0xDB, (level as u8) << 4, 0, 0, 0, 0, 0], 2),
+            // Shulltronics mod: changed level to be a full byte
+            Command::VcomhDeselect(level) => ([0xDB, (level as u8), 0, 0, 0, 0, 0], 2),
             Command::Noop => ([0xE3, 0, 0, 0, 0, 0, 0], 1),
             Command::ChargePump(en) => ([0xAD, 0x8A | (en as u8), 0, 0, 0, 0, 0], 2),
         };
@@ -172,16 +177,17 @@ pub enum NFrames {
     F256 = 0b011,
 }
 
+// Shulltronics mod: this is just wrong.. make more readable
 /// Vcomh Deselect level
 #[derive(Debug, Clone, Copy)]
 #[allow(dead_code)]
 pub enum VcomhLevel {
     /// 0.65 * Vcc
-    V065 = 0b001,
+    V065 = 0x22,
     /// 0.77 * Vcc
-    V077 = 0b010,
+    V077 = 0x35,
     /// 0.83 * Vcc
-    V083 = 0b011,
+    V083 = 0x3E,
     /// Auto
-    Auto = 0b100,
+    Auto = 0x40,
 }

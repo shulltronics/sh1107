@@ -49,7 +49,10 @@ where
 
         Command::DisplayOn(false).send(&mut self.iface)?;
         Command::DisplayClockDiv(0x8, 0x0).send(&mut self.iface)?;
-        Command::Multiplex(display_height - 1).send(&mut self.iface)?;
+        // Shulltronics mod: add this command
+        Command::MemAddressMode(0).send(&mut self.iface)?;
+        //Command::Multiplex(display_height - 1).send(&mut self.iface)?;
+        Command::Multiplex(63).send(&mut self.iface)?;
 
         // TODO: combine with match below
         match self.display_size {
@@ -61,24 +64,29 @@ where
         }?;
 
         // Shulltronics mod: setting this to 2 fixed my problem.. why?
-        Command::StartLine(2).send(&mut self.iface)?;
+        // Because of "column offset" .. don't understand yet
+        Command::StartLine(0).send(&mut self.iface)?;
         // TODO: Ability to turn charge pump on/off
         // Display must be off when performing this command
-        Command::ChargePump(true).send(&mut self.iface)?;
+        // Shulltronics mod: change to false as in Adafruit driver
+        Command::ChargePump(false).send(&mut self.iface)?;
 
         self.set_rotation(display_rotation)?;
 
+        /* Shulltronics mod -- Adafruit driver doesn't have this, so take out
         match self.display_size {
             DisplaySize::Display128x32 => Command::ComPinConfig(false).send(&mut self.iface),
             DisplaySize::Display64x128
             | DisplaySize::Display128x64
             | DisplaySize::Display128x64NoOffset
             | DisplaySize::Display132x64 => Command::ComPinConfig(true).send(&mut self.iface),
-        }?;
+        }?;*/
 
         Command::Contrast(0x80).send(&mut self.iface)?;
-        Command::PreChargePeriod(0x1, 0xF).send(&mut self.iface)?;
-        Command::VcomhDeselect(VcomhLevel::Auto).send(&mut self.iface)?;
+        // Shulltronics mod: make this same as Adafruit
+        Command::PreChargePeriod(0x2, 0x2).send(&mut self.iface)?;
+        // Shulltronics mod: make this same as Adafruit
+        Command::VcomhDeselect(VcomhLevel::V077).send(&mut self.iface)?;
         Command::AllOn(false).send(&mut self.iface)?;
         Command::Invert(false).send(&mut self.iface)?;
         Command::DisplayOn(true).send(&mut self.iface)?;

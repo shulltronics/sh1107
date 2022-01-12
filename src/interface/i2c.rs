@@ -69,7 +69,8 @@ where
                     &[
                         0x00, // Command
                         page, // Page address
-                        0x02, // Lower column address
+                        // Shulltronics mod: change from 2 to 0 (why was is 2?)
+                        0x00, // Lower column address
                         0x10, // Upper column address (always zero, base is 10h)
                     ],
                 )
