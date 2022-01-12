@@ -1,7 +1,8 @@
 //! Display rotation
+use enum_iterator::IntoEnumIterator;
 
 /// Display rotation
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, IntoEnumIterator)]
 pub enum DisplayRotation {
     /// No rotation, normal display
     Rotate0,
