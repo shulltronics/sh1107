@@ -41,7 +41,12 @@
 //! ```
 
 use core::marker::PhantomData;
-use hal::{self, digital::v2::OutputPin};
+use core::convert::Infallible;
+use hal::{
+    self,
+    digital::ErrorType,
+    digital::OutputPin,
+};
 
 use crate::{
     displayrotation::DisplayRotation,
@@ -97,9 +102,9 @@ impl Builder {
     }
 
     /// Finish the builder and use I2C to communicate with the display
-    pub fn connect_i2c<I2C, CommE>(self, i2c: I2C) -> DisplayMode<RawMode<I2cInterface<I2C>>>
+    pub fn connect_i2c<I2C>(self, i2c: I2C) -> DisplayMode<RawMode<I2cInterface<I2C>>>
     where
-        I2C: hal::blocking::i2c::Write<Error = CommE>,
+        I2C: hal::i2c::I2c,
     {
         let properties = DisplayProperties::new(
             I2cInterface::new(i2c, self.i2c_addr),
@@ -114,17 +119,16 @@ impl Builder {
     /// If the Chip Select (CS) pin is not required, [`NoOutputPin`] can be used as a dummy argument
     ///
     /// [`NoOutputPin`]: ./struct.NoOutputPin.html
-    pub fn connect_spi<SPI, DC, CS, CommE, PinE>(
+    pub fn connect_spi<SPI, DC, CS>(
         self,
         spi: SPI,
         dc: DC,
         cs: CS,
     ) -> DisplayMode<RawMode<SpiInterface<SPI, DC, CS>>>
     where
-        SPI: hal::blocking::spi::Transfer<u8, Error = CommE>
-            + hal::blocking::spi::Write<u8, Error = CommE>,
-        DC: OutputPin<Error = PinE>,
-        CS: OutputPin<Error = PinE>,
+        SPI: hal::spi::SpiDevice,
+        DC: OutputPin,
+        CS: OutputPin,
     {
         let properties = DisplayProperties::new(
             SpiInterface::new(spi, dc, cs),
@@ -137,23 +141,27 @@ impl Builder {
 
 /// Represents an unused output pin.
 #[derive(Clone, Copy)]
-pub struct NoOutputPin<PinE = ()> {
-    _m: PhantomData<PinE>,
+pub struct NoOutputPin {
+    _m: PhantomData<()>,
 }
 
-impl<PinE> NoOutputPin<PinE> {
+impl NoOutputPin {
     /// Create a new instance of `NoOutputPin`
     pub fn new() -> Self {
         Self { _m: PhantomData }
     }
 }
 
-impl<PinE> OutputPin for NoOutputPin<PinE> {
-    type Error = PinE;
-    fn set_low(&mut self) -> Result<(), PinE> {
+impl ErrorType for NoOutputPin {
+    type Error = Infallible;
+}
+
+impl OutputPin for NoOutputPin  {
+    // type Error = PinE;
+    fn set_low(&mut self) -> Result<(), Self::Error> {
         Ok(())
     }
-    fn set_high(&mut self) -> Result<(), PinE> {
+    fn set_high(&mut self) -> Result<(), Self::Error> {
         Ok(())
     }
 }
@@ -161,11 +169,11 @@ impl<PinE> OutputPin for NoOutputPin<PinE> {
 #[cfg(test)]
 mod tests {
     use super::NoOutputPin;
-    use embedded_hal::digital::v2::OutputPin;
+    use embedded_hal::digital::OutputPin;
 
-    enum SomeError {}
+    // enum SomeError {}
 
-    struct SomeDriver<P: OutputPin<Error = SomeError>> {
+    struct SomeDriver<P: OutputPin> {
         #[allow(dead_code)]
         p: P,
     }

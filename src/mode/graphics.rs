@@ -15,7 +15,7 @@
 //! display.flush().unwrap();
 //! ```
 
-use hal::{blocking::delay::DelayMs, digital::v2::OutputPin};
+use hal::{delay::DelayNs, digital::OutputPin};
 
 use crate::{
     displayrotation::DisplayRotation, interface::DisplayInterface,
@@ -68,7 +68,7 @@ where
     ) -> Result<(), Error<(), PinE>>
     where
         RST: OutputPin<Error = PinE>,
-        DELAY: DelayMs<u8>,
+        DELAY: DelayNs,
     {
         rst.set_high().map_err(Error::Pin)?;
         delay.delay_ms(1);
